@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.Maui.ApplicationModel.Permissions;
@@ -9,7 +10,7 @@ namespace firstui.Services
 {
     public class ApiService
     {
-        private const string ApiKey = "";
+        private const string ApiKey = "05fae875ba825af281bcb0a5583071e1";
         private readonly IHttpClientFactory _httpClientFactory;
         public const string httpClientName = "TmdbClient";
         public ApiService(IHttpClientFactory httpClientFactory) 
@@ -18,6 +19,12 @@ namespace firstui.Services
         }
 
         private HttpClient HttpClient => _httpClientFactory.CreateClient(httpClientName);
+
+        public async Task<IEnumerable<Result>> GetTrending()
+        {
+            var trendingMovieCollection = await HttpClient.GetFromJsonAsync<Movie>($"{TmdbUrls.Trending}&api_key={ApiKey}");
+            return trendingMovieCollection?.results ?? [];
+        }
     }
 
     public static class TmdbUrls
@@ -61,19 +68,19 @@ namespace firstui.Services
         public string ThumbnailUrl => $"https://image.tmdb.org/t/p/original/{ThumbnailPath}";
         public string DisplayTitle => title ?? name ?? original_title ?? original_name;
 
-        public Media ToMediaObject() =>
-            new()
-            {
-                Id = id,
-                DisplayTitle = DisplayTitle,
-                MediaType = media_type,
-                Overview = overview,
-                ReleaseDate = release_date,
-                Thumbnail = Thumbnail,
-                ThumbnailSmall = ThumbnailSmall,
-                ThumbnailUrl = ThumbnailUrl
-            };
-    }
+    //    public Media ToMediaObject() =>
+    //        new()
+    //        {
+    //            Id = id,
+    //            DisplayTitle = DisplayTitle,
+    //            MediaType = media_type,
+    //            Overview = overview,
+    //            ReleaseDate = release_date,
+    //            Thumbnail = Thumbnail,
+    //            ThumbnailSmall = ThumbnailSmall,
+    //            ThumbnailUrl = ThumbnailUrl
+    //        };
+    //}
 
 
     public class VideosWrapper
